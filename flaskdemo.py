@@ -20,9 +20,28 @@ def runled(queue2):
         print "start while"
         runtext(queue2)
 
+class manageled(object):
+    """docstring for manageled"""
+    def __init__(self):
+        super(manageled, self).__init__()
+
+        self.queue=multiprocessing.Queue()
+        self.p = multiprocessing.Process(target=runled, args=(self.queue,))
+    def lstart(self):
+        self.p.start()
+    def lstop(self):
+        self.queue.put('something')
+        self.queue.close()
+        self.queue.join_thread()
+        self.p.join
+
+
+        
+
+
 app = Flask(__name__)
-queue=multiprocessing.Queue()
-p = multiprocessing.Process(target=runled, args=(queue,))
+led=manageled()
+
 
 @app.route("/")
 def hello():
@@ -40,15 +59,13 @@ def reply(user):
 @app.route("/start/")
 def start():
 	#p = multiprocessing.Process(target=runled, args=(queue,))
-	p.start()
-	return "running"
+	#p.start()
+    led.lstart()
+    return "running"
     
 @app.route("/stop/")
 def stop ():
-    queue.put('something')
-    queue.close()
-    queue.join_thread()
-    p.join
+    led.lstop()
     return "stop"
 
 if __name__ == "__main__":
