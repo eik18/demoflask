@@ -21,11 +21,10 @@ class runled(object):
         self.queue=queue
     def runtext(self):
         temptext=self.defaulttext
-        queue=self.queue
         while True:
             for x in range (10):
                 print "Counting %d, text is %s" %(x,temptext)
-                obj=getqueue(queue)
+                obj=getqueue(self.queue)
                 if 'flag' in obj:
                     print "got exit!"
                     exit()
@@ -41,7 +40,7 @@ class manageled(object):
 
         self.queue=multiprocessing.Queue()
         led=runled(self.queue)
-        self.p = multiprocessing.Process(target=led.runtext,args=())
+        self.p = multiprocessing.Process(target=led.runtext,args=())  #call queue here
     def lstart(self):
         self.p.start()
     def lstop(self):
