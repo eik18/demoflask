@@ -6,25 +6,33 @@ from sys import exit
 def getqueue(queue2):
     try:
         obj=queue2.get(True,1)
+        if obj is not dict:
+            obj={'nothing':'none'}
     except Exception as e:
-        obj=None  
-        pass
+        obj={'nothing':'none'}
         return obj
 
+class runled(object):
+    """docstring for runled"""
+    def __init__(self, queue):
+        super(runled, self).__init__()
+        #self.queue = internalqueue
+        self.defaulttext="test"
+        self.queue=queue
+    def runtext(self):
+        temptext=self.defaulttext
+        queue=self.queue
+        while True:
+            for x in range (10):
+                print "Counting %d, text is %s" %(x,temptext)
+                obj=getqueue(queue)
+                if 'flag' in obj:
+                    print "got exit!"
+                    exit()
+                if 'text' in obj:
+                    temptext=obj['text']
 
-def runled(queue1):
-    sleep(1) 
-    end=4
-    while True:
-        f=getqueue(queue1)
-        if f[count] is not None:
-            end=f[count]
-        for x in range (end):
-            print "Counting %d" %(x)
-            f=getqueue(queue1)
-            if f[flag]==True:
-                print "got exit!"
-                break
+
 
 class manageled(object):
     """docstring for manageled"""
@@ -32,14 +40,13 @@ class manageled(object):
         super(manageled, self).__init__()
 
         self.queue=multiprocessing.Queue()
-        self.p = multiprocessing.Process(target=runled, args=(self.queue,))
+        led=runled(self.queue)
+        self.p = multiprocessing.Process(target=led.runtext,args=())
     def lstart(self):
-        h={"count":7,"flag":False}
         self.p.start()
-        self.queue.put(h)
     def lstop(self):
-        h={'flag':True}
-        self.queue.put(h)
+        temphash={"flag":True}
+        self.queue.put(temphash)
         self.queue.close()
         self.queue.join_thread()
         self.p.join
