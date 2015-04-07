@@ -6,26 +6,27 @@ from sys import exit
 def getqueue(queue2):
     try:
         obj=queue2.get(True,1)
-        if obj is not dict:
-            obj={'nothing':'none'}
+        print "not dict"
+        #print obj
+        return obj
     except Exception as e:
         obj={'nothing':'none'}
         return obj
 
+
 class runled(object):
     """docstring for runled"""
-    def __init__(self, queue):
+    def __init__(self):
         super(runled, self).__init__()
         #self.queue = internalqueue
         self.defaulttext="test"
-        self.queue=queue
-    def runtext(self):
+    def runtext(self,queue):
         temptext=self.defaulttext
         while True:
             for x in range (10):
                 print "Counting %d, text is %s" %(x,temptext)
-                obj=getqueue(self.queue)
-                if 'flag' in obj:
+                obj=getqueue(queue)
+                if 'flag' in obj and obj["flag"]==True:
                     print "got exit!"
                     exit()
                 if 'text' in obj:
@@ -39,12 +40,13 @@ class manageled(object):
         super(manageled, self).__init__()
 
         self.queue=multiprocessing.Queue()
-        led=runled(self.queue)
-        self.p = multiprocessing.Process(target=led.runtext,args=())  #call queue here
+        led=runled()
+        self.p = multiprocessing.Process(target=led.runtext,args=(self.queue,))  #call queue here
     def lstart(self):
         self.p.start()
     def lstop(self):
         temphash={"flag":True}
+        #temphash={"text":"work?"}
         self.queue.put(temphash)
         self.queue.close()
         self.queue.join_thread()
